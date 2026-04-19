@@ -1,6 +1,6 @@
 {
   "name": "espocrm-a2a-simulation-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A2A Agent-to-Agent simulation extension for EspoCRM",
   "license": "MIT",
   "author": "JuntoAI",

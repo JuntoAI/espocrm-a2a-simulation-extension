@@ -11,5 +11,7 @@
         }
     },
     "params": ["apiKey", "baseUrl"],
+    "allowUserAccess": false,
+    "view": "views/admin/integrations/edit",
     "testConnectionAction": "A2ASimulation/testConnection"
 }
