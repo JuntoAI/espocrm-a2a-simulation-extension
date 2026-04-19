@@ -1,0 +1,36 @@
+{
+    "labels": {
+        "Create A2ASimulation": "Create Simulation",
+        "A2ASimulation": "A2A Simulation"
+    },
+    "fields": {
+        "name": "Scenario Name",
+        "sessionId": "Session ID",
+        "contact": "Contact",
+        "scenarioId": "Scenario ID",
+        "status": "Status",
+        "outcome": "Outcome",
+        "outcomeSummary": "Outcome Summary",
+        "viewerUrl": "Viewer URL",
+        "turnsCompleted": "Turns Completed"
+    },
+    "links": {
+        "contact": "Contact"
+    },
+    "options": {
+        "status": {
+            "Running": "Running",
+            "Completed": "Completed",
+            "Failed": "Failed"
+        },
+        "outcome": {
+            "": "",
+            "Agreed": "Agreed",
+            "Blocked": "Blocked",
+            "Failed": "Failed"
+        }
+    },
+    "tooltips": {
+        "viewerUrl": "Opens the full simulation transcript and evaluation in the A2A Glass Box viewer."
+    }
+}

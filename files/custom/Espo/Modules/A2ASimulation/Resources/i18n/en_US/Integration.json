@@ -1,0 +1,17 @@
+{
+    "labels": {
+        "A2ASimulation": "A2A Simulation"
+    },
+    "fields": {
+        "apiKey": "API Key",
+        "baseUrl": "Base URL"
+    },
+    "tooltips": {
+        "apiKey": "Your JuntoAI A2A API key. Found in the A2A dashboard under Settings > API Keys.",
+        "baseUrl": "The A2A Integration API base URL. Default: https://api.juntoai.org/api/v1/integrations"
+    },
+    "messages": {
+        "testConnectionSuccess": "Connection successful. A2A API is reachable.",
+        "testConnectionFailed": "Connection failed. Check your API key and base URL."
+    }
+}

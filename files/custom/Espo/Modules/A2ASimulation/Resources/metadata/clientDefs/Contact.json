@@ -1,0 +1,10 @@
+{
+    "relationshipPanels": {
+        "a2aSimulations": {
+            "view": "a2a-simulation:views/contact/record/panels/a2a-simulations",
+            "label": "A2A Simulations",
+            "order": 20,
+            "createDisabled": true
+        }
+    }
+}

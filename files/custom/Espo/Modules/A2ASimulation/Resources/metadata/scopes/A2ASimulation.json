@@ -1,0 +1,13 @@
+{
+    "entity": true,
+    "object": true,
+    "tab": false,
+    "acl": true,
+    "aclPortal": false,
+    "customizable": false,
+    "importable": false,
+    "notifications": false,
+    "calendar": false,
+    "activity": false,
+    "disabled": false
+}

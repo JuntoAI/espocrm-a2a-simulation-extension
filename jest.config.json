@@ -1,0 +1,6 @@
+{
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/tests"],
+  "testMatch": ["<rootDir>/tests/**/*.test.js"],
+  "verbose": true
+}

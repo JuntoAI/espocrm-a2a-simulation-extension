@@ -1,0 +1,22 @@
+[
+    {
+        "route": "/A2ASimulation/scenarios",
+        "method": "get",
+        "actionClassName": "Espo\\Modules\\A2ASimulation\\Api\\GetScenarios"
+    },
+    {
+        "route": "/A2ASimulation/simulate",
+        "method": "post",
+        "actionClassName": "Espo\\Modules\\A2ASimulation\\Api\\PostSimulate"
+    },
+    {
+        "route": "/A2ASimulation/sessions/:id",
+        "method": "get",
+        "actionClassName": "Espo\\Modules\\A2ASimulation\\Api\\GetSessionStatus"
+    },
+    {
+        "route": "/A2ASimulation/testConnection",
+        "method": "post",
+        "actionClassName": "Espo\\Modules\\A2ASimulation\\Api\\PostTestConnection"
+    }
+]

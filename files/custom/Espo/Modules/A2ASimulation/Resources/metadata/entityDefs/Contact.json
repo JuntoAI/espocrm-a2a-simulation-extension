@@ -1,0 +1,9 @@
+{
+    "links": {
+        "a2aSimulations": {
+            "type": "hasMany",
+            "entity": "A2ASimulation",
+            "foreign": "contact"
+        }
+    }
+}

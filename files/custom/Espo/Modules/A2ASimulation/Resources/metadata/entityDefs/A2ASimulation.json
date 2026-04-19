@@ -1,0 +1,42 @@
+{
+    "fields": {
+        "name": {
+            "type": "varchar",
+            "required": true
+        },
+        "sessionId": {
+            "type": "varchar"
+        },
+        "contact": {
+            "type": "link"
+        },
+        "scenarioId": {
+            "type": "varchar"
+        },
+        "status": {
+            "type": "enum",
+            "options": ["Running", "Completed", "Failed"],
+            "default": "Running"
+        },
+        "outcome": {
+            "type": "enum",
+            "options": ["", "Agreed", "Blocked", "Failed"]
+        },
+        "outcomeSummary": {
+            "type": "text"
+        },
+        "viewerUrl": {
+            "type": "url"
+        },
+        "turnsCompleted": {
+            "type": "int"
+        }
+    },
+    "links": {
+        "contact": {
+            "type": "belongsTo",
+            "entity": "Contact",
+            "foreign": "a2aSimulations"
+        }
+    }
+}

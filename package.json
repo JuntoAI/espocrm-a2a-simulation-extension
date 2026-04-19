@@ -1,0 +1,15 @@
+{
+  "name": "espocrm-a2a-simulation-extension",
+  "version": "1.0.0",
+  "description": "A2A Agent-to-Agent simulation extension for EspoCRM",
+  "license": "MIT",
+  "author": "JuntoAI",
+  "scripts": {
+    "test": "jest --verbose",
+    "build": "bash build.sh"
+  },
+  "devDependencies": {
+    "fast-check": "^4.7.0",
+    "jest": "^29.7.0"
+  }
+}

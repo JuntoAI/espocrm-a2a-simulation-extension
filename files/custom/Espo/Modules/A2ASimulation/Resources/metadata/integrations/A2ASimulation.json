@@ -1,0 +1,15 @@
+{
+    "fields": {
+        "apiKey": {
+            "type": "varchar",
+            "required": true
+        },
+        "baseUrl": {
+            "type": "varchar",
+            "required": true,
+            "default": "https://api.juntoai.org/api/v1/integrations"
+        }
+    },
+    "params": ["apiKey", "baseUrl"],
+    "testConnectionAction": "A2ASimulation/testConnection"
+}
