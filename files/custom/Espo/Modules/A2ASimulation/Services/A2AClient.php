@@ -3,10 +3,14 @@
  * A2A Integration API client service.
  *
  * Central service for all communication with the JuntoAI A2A Simulation Engine.
- * Reads API credentials from the EspoCRM Integration entity and proxies
- * all requests through cURL with Bearer token authentication.
+ * Reads the integration token from the EspoCRM Integration entity and proxies
+ * all requests through cURL with dual-header authentication:
  *
- * API key never leaves server-side PHP — frontend calls EspoCRM endpoints,
+ *   X-Integration-Token: org-level token (from admin config)
+ *   X-User-Email: logged-in CRM user's email (per-request)
+ *
+ * The A2A API validates that the email domain matches the org's registered domain.
+ * Integration token never leaves server-side PHP — frontend calls EspoCRM endpoints,
  * which delegate to this service.
  */
 
@@ -15,6 +19,7 @@ namespace Espo\Modules\A2ASimulation\Services;
 use Espo\Core\Exceptions\Error;
 use Espo\Core\Exceptions\Forbidden;
 use Espo\Core\Utils\Config;
+use Espo\Entities\User;
 use Espo\ORM\EntityManager;
 
 class A2AClient
@@ -31,6 +36,7 @@ class A2AClient
     public function __construct(
         private EntityManager $entityManager,
         private Config $config,
+        private User $user,
     ) {}
 
     /**
@@ -84,18 +90,34 @@ class A2AClient
     }
 
     /**
+     * Get the email address of the currently logged-in user.
+     *
+     * @return string User email or empty string if not available.
+     */
+    private function getUserEmail(): string
+    {
+        $emailAddress = $this->user->get('emailAddress');
+
+        if (is_string($emailAddress) && $emailAddress !== '') {
+            return $emailAddress;
+        }
+
+        return '';
+    }
+
+    /**
      * Execute an HTTP request to the A2A API.
      *
      * Reads credentials from the Integration entity, builds a cURL request
-     * with Bearer token auth, and handles error responses with user-friendly
-     * exception messages.
+     * with X-Integration-Token and X-User-Email headers, and handles error
+     * responses with user-friendly exception messages.
      *
      * @param string     $method HTTP method (GET or POST).
      * @param string     $path   API path (e.g., "/scenarios").
      * @param array|null $body   Request body for POST requests.
      * @return array Decoded JSON response.
      * @throws Error     On connection failure, rate limit, or server errors.
-     * @throws Forbidden On authentication failure (invalid API key).
+     * @throws Forbidden On authentication or authorization failure.
      */
     private function request(string $method, string $path, ?array $body = null): array
     {
@@ -112,13 +134,22 @@ class A2AClient
         }
 
         $data = $integration->get('data') ?? (object)[];
-        $apiKey = $data->apiKey ?? null;
+        $integrationToken = $data->integrationToken ?? null;
         $baseUrl = $data->baseUrl ?? self::DEFAULT_BASE_URL;
 
-        if (!is_string($apiKey) || $apiKey === '') {
+        if (!is_string($integrationToken) || $integrationToken === '') {
             throw new Error(
-                'A2A API key not configured. '
+                'A2A Integration Token not configured. '
                 . 'Go to Administration > Integrations > A2A Simulation.'
+            );
+        }
+
+        $userEmail = $this->getUserEmail();
+
+        if ($userEmail === '') {
+            throw new Forbidden(
+                'Your EspoCRM user account has no email address. '
+                . 'An email is required to authenticate with the A2A API.'
             );
         }
 
@@ -127,7 +158,8 @@ class A2AClient
         $ch = curl_init($url);
 
         $headers = [
-            'Authorization: Bearer ' . $apiKey,
+            'X-Integration-Token: ' . $integrationToken,
+            'X-User-Email: ' . $userEmail,
             'Accept: application/json',
         ];
 
@@ -167,10 +199,44 @@ class A2AClient
             $decoded = [];
         }
 
-        // Handle HTTP error statuses.
+        // Handle HTTP error statuses per architecture guide §7.
         if ($httpCode === 401) {
+            $detail = $decoded['detail'] ?? '';
+
+            if (stripos($detail, 'email') !== false) {
+                throw new Forbidden(
+                    'User email is not valid. Contact your admin.'
+                );
+            }
+
             throw new Forbidden(
-                'Invalid A2A API key. Check Administration > Integrations.'
+                'Invalid integration token. Check Administration > Integrations.'
+            );
+        }
+
+        if ($httpCode === 403) {
+            $detail = $decoded['detail'] ?? '';
+
+            if (stripos($detail, 'domain') !== false) {
+                throw new Forbidden(
+                    'Your email domain is not authorized for this integration.'
+                );
+            }
+
+            if (stripos($detail, 'deactivated') !== false || stripos($detail, 'revoked') !== false) {
+                throw new Forbidden(
+                    'Integration access has been revoked. Contact JuntoAI support.'
+                );
+            }
+
+            throw new Forbidden(
+                'Access denied. Contact your admin or JuntoAI support.'
+            );
+        }
+
+        if ($httpCode === 404) {
+            throw new Error(
+                $decoded['detail'] ?? 'Resource not found on the A2A API.'
             );
         }
 

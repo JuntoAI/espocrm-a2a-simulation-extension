@@ -1,6 +1,6 @@
 {
     "fields": {
-        "apiKey": {
+        "integrationToken": {
             "type": "varchar",
             "required": true
         },
@@ -10,7 +10,7 @@
             "default": "https://api.juntoai.org/api/v1/integrations"
         }
     },
-    "params": ["apiKey", "baseUrl"],
+    "params": ["integrationToken", "baseUrl"],
     "allowUserAccess": false,
     "view": "views/admin/integrations/edit",
     "testConnectionAction": "A2ASimulation/testConnection"

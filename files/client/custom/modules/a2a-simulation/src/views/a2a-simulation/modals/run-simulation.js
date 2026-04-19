@@ -91,7 +91,9 @@ define('a2a-simulation:views/a2a-simulation/modals/run-simulation', ['views/moda
                     if (xhr && xhr.status === 502) {
                         msg = 'Simulation service temporarily unavailable. Try again later.';
                     } else if (xhr && xhr.status === 403) {
-                        msg = "You don't have permission to run simulations.";
+                        msg = self._parse403Message(xhr);
+                    } else if (xhr && xhr.status === 401) {
+                        msg = 'Invalid integration token. Contact your admin.';
                     }
 
                     if (self.isRendered()) {
@@ -474,7 +476,9 @@ define('a2a-simulation:views/a2a-simulation/modals/run-simulation', ['views/moda
                     } else if (xhr && xhr.status === 502) {
                         msg = 'Simulation service temporarily unavailable. Try again later.';
                     } else if (xhr && xhr.status === 403) {
-                        msg = "You don't have permission to run simulations.";
+                        msg = self._parse403Message(xhr);
+                    } else if (xhr && xhr.status === 401) {
+                        msg = 'Invalid integration token. Contact your admin.';
                     }
 
                     Espo.Ui.notify(msg, 'error', 5000);
@@ -515,6 +519,36 @@ define('a2a-simulation:views/a2a-simulation/modals/run-simulation', ['views/moda
 
         _escapeAttr: function (str) {
             return this._escapeHtml(str);
+        },
+
+        /**
+         * Parse a 403 response to extract a user-friendly error message.
+         * The A2A API returns different 403 reasons: domain mismatch,
+         * org deactivated, or generic access denied.
+         */
+        _parse403Message: function (xhr) {
+            var defaultMsg = 'Access denied. Contact your admin or JuntoAI support.';
+
+            if (!xhr || !xhr.responseText) {
+                return defaultMsg;
+            }
+
+            try {
+                var body = JSON.parse(xhr.responseText);
+                var detail = (body && body.detail) ? String(body.detail).toLowerCase() : '';
+
+                if (detail.indexOf('domain') !== -1) {
+                    return 'Your email domain is not authorized for this integration.';
+                }
+
+                if (detail.indexOf('deactivated') !== -1 || detail.indexOf('revoked') !== -1) {
+                    return 'Integration access has been revoked. Contact JuntoAI support.';
+                }
+            } catch (e) {
+                // ignore parse errors
+            }
+
+            return defaultMsg;
         },
     });
 });
